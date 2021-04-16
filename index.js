@@ -3,6 +3,8 @@ const app = express()
 const cors = require('cors');
 const bodyParser = require('body-parser');
 const MongoClient = require('mongodb').MongoClient;
+const ObjectID = require('mongodb').ObjectID;
+
 require('dotenv').config()
 
 const port =process.env.PORT || 5000;
@@ -20,6 +22,7 @@ client.connect(err => {
   console.log('conn err', err);
   const serviceCollection = client.db("carMechanic").collection("services");
   const reviewCollection = client.db("carMechanic").collection("reviews");
+  const orderCollection = client.db("carMechanic").collection("orders");
 
   console.log('Database connect');
 
@@ -60,6 +63,36 @@ client.connect(err => {
       res.send(documents)
     })
   })
+
+
+   // single data checkout service with id
+   app.get('/services:id',(req, res) =>{
+    serviceCollection.find({_id: ObjectID(req.params.id)})
+    .toArray((err, documents) =>{
+      res.send(documents[0]);
+    })
+  })
+
+  // order service
+  app.post('/addOrder', (req, res) =>{
+    const order = req.body;
+    console.log('adding new product', order);
+    orderCollection.insertOne(order)
+    .then(result => {
+      console.log('inserted Count',result.insertedCount);
+      res.send(result.insertedCount > 0)
+    })
+  })
+
+  app.get('/orders', (req, res) => {
+    orderCollection.find()
+    .toArray((err, documents) => {
+      res.send(documents)
+    })
+  })
+
+
+
 
 });
 
