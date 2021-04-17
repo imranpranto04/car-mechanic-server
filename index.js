@@ -91,6 +91,18 @@ client.connect(err => {
     })
   })
 
+  // delete services
+  app.delete('/delete/:id', (req, res) => {
+    const id = (req.params.id);
+    console.log(id);
+    console.log('delete',id);
+    serviceCollection.deleteOne({_id:ObjectID(id)})
+    // .then(documents => res.send(!!documents.value))
+    .then(err, documents =>{
+      res.send(documents.deleteCount > 0)
+      console.log(documents, err);
+    })
+  })
 
 
 
